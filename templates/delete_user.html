@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete User</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1 id="text">Delete User</h1>
+    <form action="/delete_user_from_db" method="post">
+        <label for="user_id">User ID:</label>
+        <input type="text" id="user_id" name="user_id" required><br><br>
+        <input type="submit" value="Delete User">
+    </form>
+    <a href="/">Back to main page</a>
+</div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, Form
+from fastapi import FastAPI, Request, Depends, Form, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -42,7 +42,8 @@ async def view_profile(request: Request, user_id: int, db: Session = Depends(get
 
 
 @app.post("/add_user_to_db", response_class=HTMLResponse)
-async def add_user(request: Request, name: str = Form(...), email: str = Form(...), db: Session = Depends(get_db)):
+async def add_user_to_db(request: Request, name: str = Form(...), email: str = Form(...),
+                         db: Session = Depends(get_db)):
     db_user = User(name=name, email=email)
     db.add(db_user)
     db.commit()
@@ -51,8 +52,24 @@ async def add_user(request: Request, name: str = Form(...), email: str = Form(..
 
 
 @app.get("/add_user", response_class=HTMLResponse)
-async def add_user_form(request: Request):
+async def add_user(request: Request):
     return templates.TemplateResponse("add_user.html", {"request": request})
+
+
+@app.get("/delete_user", response_class=HTMLResponse)
+async def delete_user(request: Request):
+    return templates.TemplateResponse("delete_user.html", {"request": request})
+
+
+@app.post("/delete_user_from_db", response_class=HTMLResponse)
+async def delete_user_from_db(request: Request, user_id: int = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(user)
+    db.commit()
+    return templates.TemplateResponse("user_deleted.html", {"request": request, "user_id": user_id})
+
 
 if __name__ == '__main__':
     import uvicorn
